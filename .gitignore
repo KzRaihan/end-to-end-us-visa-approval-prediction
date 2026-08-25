@@ -3,6 +3,13 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+
+# Ignore project artifacts
+notebooks/artifacts/
+
+# Ignore CatBoost information
+notebooks/catboost_info/
+
 # C extensions
 *.so
 
