@@ -10,6 +10,9 @@ notebooks/artifacts/
 # Ignore CatBoost information
 notebooks/catboost_info/
 
+# Ignore all artifact Directory
+artifact/*
+
 # C extensions
 *.so
 

@@ -26,3 +26,13 @@ conda activate visa
 ```bash
 pip install -r requirements.txt
 ```
+
+### for every components we updating the following format
+- 1. constants
+- 2. config_entity
+- 3. config_artifact
+- 4. component
+- 5. pipeline
+- 6. app.py/demo.py
+
+

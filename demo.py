@@ -1,7 +1,6 @@
-from us_visa.exception import USvisaException
-import os, sys
+from us_visa.pipeline.training_pipeline import TrainingPipeline
 
-try:
-    a = 1/0
-except Exception as e:
-    raise USvisaException(e, sys) from e
+pipeline = TrainingPipeline()
+
+pipeline.run_pipeline()
+
