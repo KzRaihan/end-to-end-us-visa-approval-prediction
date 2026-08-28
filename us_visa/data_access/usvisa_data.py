@@ -1,6 +1,6 @@
 # ==============================================================================
 # us_visa/data_access/usvisa_data.py
-# Data Access Object (DAO) for all MongoDB read/write operations
+# Data Access Data from MongoDB and convert data into DataFrame
 # ==============================================================================
 import os
 import sys
