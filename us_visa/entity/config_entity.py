@@ -93,5 +93,56 @@ class DataTransformationConfig:
     )
 
 
+# ==============================================================================
+# 4. MODEL TRAINER CONFIGURATION
+# ==============================================================================
+@dataclass
+class ModelTrainerConfig:
+    """
+    Configuration class for the Model Trainer component.
 
+    This class defines:
+        - Model Trainer artifact directory
+        - Trained model file path
+        - Minimum expected model performance
+        - Model configuration YAML file path
+    """
+
+    # --------------------------------------------------------------------------
+    # Model Trainer Artifact Directory
+    # --------------------------------------------------------------------------
+    # Example:
+    # artifact/model_trainer
+    model_trainer_dir: str = os.path.join(
+        training_pipeline_config.artifact_dir,
+        MODEL_TRAINER_DIR_NAME
+    )
+
+    # --------------------------------------------------------------------------
+    # Trained Model File Path
+    # --------------------------------------------------------------------------
+    # Example:
+    # artifact/model_trainer/trained_model/model.pkl
+    trained_model_file_path: str = os.path.join(
+        model_trainer_dir,
+        MODEL_TRAINER_TRAINED_MODEL_DIR,
+        MODEL_TRAINER_TRAINED_MODEL_NAME
+    )
+
+    # --------------------------------------------------------------------------
+    # Minimum Expected Model Score
+    # --------------------------------------------------------------------------
+    # This threshold is used to determine whether the trained model
+    # performs well enough to be accepted by the pipeline.
+    expected_f1_score: float = MODEL_TRAINER_EXPECTED_SCORE
+
+    # --------------------------------------------------------------------------
+    # Model Configuration File
+    # --------------------------------------------------------------------------
+    # Points to config/model.yaml, which contains:
+    #     - Model definitions
+    #     - Default parameters
+    #     - Hyperparameter search spaces
+    #     - GridSearchCV configuration
+    model_config_file_path: str = MODEL_TRAINER_MODEL_CONFIG_FILE_PATH
 

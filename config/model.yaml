@@ -1,0 +1,174 @@
+# ==============================================================================
+# model.yaml
+#
+# Model Configuration for US Visa Approval Prediction
+#
+# Purpose:
+#     This file contains model definitions and hyperparameter search spaces
+#     used by the Model Trainer component.
+#
+# Benefits:
+#     - Keeps model configuration separate from Python code
+#     - Makes hyperparameter tuning easier
+#     - Allows new models to be added without changing ModelTrainer logic
+# ==============================================================================
+
+
+# ==============================================================================
+# GRID SEARCH CONFIGURATION
+# ==============================================================================
+
+grid_search:
+
+  # Class used for hyperparameter tuning
+  class: GridSearchCV
+
+  # Python module containing GridSearchCV
+  module: sklearn.model_selection
+
+  # Parameters passed to GridSearchCV
+  params:
+
+    # Number of cross-validation folds
+    cv: 3
+
+    # Evaluation metric used to select the best hyperparameters
+    # F1-score is useful for this classification problem because the
+    # target classes are not perfectly balanced.
+    scoring: f1
+
+    # Display detailed training progress
+    verbose: 3
+
+    # Use all available CPU cores to speed up hyperparameter search
+    n_jobs: -1
+
+
+# ==============================================================================
+# MODEL SELECTION
+#
+# Each module represents one candidate classification algorithm.
+#
+# The Model Trainer will:
+#     1. Read the model configuration
+#     2. Dynamically create the model
+#     3. Apply GridSearchCV
+#     4. Search the specified hyperparameter combinations
+#     5. Select the best configuration for that model
+# ==============================================================================
+
+model_selection:
+
+
+  # ============================================================================
+  # MODEL 0: K-NEAREST NEIGHBORS
+  # ============================================================================
+
+  module_0:
+
+    # Machine learning algorithm
+    class: KNeighborsClassifier
+
+    # Python module containing KNeighborsClassifier
+    module: sklearn.neighbors
+
+    # --------------------------------------------------------------------------
+    # Default model parameters
+    #
+    # These parameters are used to initialize the model before
+    # hyperparameter tuning.
+    # --------------------------------------------------------------------------
+
+    params:
+
+      # Algorithm used to search for nearest neighbors
+      algorithm: kd_tree
+
+      # Weighting strategy for neighboring samples
+      weights: uniform
+
+      # Default number of neighbors
+      n_neighbors: 3
+
+
+    # --------------------------------------------------------------------------
+    # Hyperparameter Search Space
+    #
+    # GridSearchCV evaluates different combinations of these values
+    # and selects the combination that produces the best F1-score.
+    # --------------------------------------------------------------------------
+
+    search_param_grid:
+
+      # Different algorithms for finding nearest neighbors
+      algorithm:
+        - auto
+        - ball_tree
+        - kd_tree
+        - brute
+
+      # Weighting strategy for neighbors
+      weights:
+        - uniform
+        - distance
+
+      # Number of neighboring samples considered
+      n_neighbors:
+        - 3
+        - 5
+        - 9
+
+
+  # ============================================================================
+  # MODEL 1: RANDOM FOREST CLASSIFIER
+  # ============================================================================
+
+  module_1:
+
+    # Machine learning algorithm
+    class: RandomForestClassifier
+
+    # Python module containing RandomForestClassifier
+    module: sklearn.ensemble
+
+    # --------------------------------------------------------------------------
+    # Default model parameters
+    # --------------------------------------------------------------------------
+
+    params:
+
+      # Maximum depth of each decision tree
+      max_depth: 10
+
+      # Number of features considered when splitting a node
+      max_features: sqrt
+
+      # Number of decision trees in the forest
+      n_estimators: 3
+
+
+    # --------------------------------------------------------------------------
+    # Hyperparameter Search Space
+    #
+    # GridSearchCV evaluates every possible combination of these parameters.
+    # --------------------------------------------------------------------------
+
+    search_param_grid:
+
+      # Maximum depth of individual decision trees
+      max_depth:
+        - 10
+        - 15
+        - 20
+
+      # Feature-selection strategy used by each tree
+      max_features:
+        - sqrt
+        - log2
+
+      # Number of trees in the Random Forest
+      n_estimators:
+        - 3
+        - 5
+        - 9
+

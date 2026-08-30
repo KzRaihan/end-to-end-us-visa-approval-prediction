@@ -58,9 +58,58 @@ DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR: str = "transformed_object"
 
 
 
+# ------------------------------------------------------------------------------
+# 5. MODEL TRAINER CONSTANTS
+# ------------------------------------------------------------------------------
+"""
+Constants related to the Model Trainer component.
+
+All Model Trainer-related constants start with the
+'MODEL_TRAINER' prefix for easy identification and maintenance.
+"""
 
 
+# ------------------------------------------------------------------------------
+# Model Trainer Directory Configuration
+# ------------------------------------------------------------------------------
 
+# Main directory where Model Trainer artifacts will be stored.
+MODEL_TRAINER_DIR_NAME: str = "model_trainer"
+
+# Directory inside the Model Trainer artifact directory
+# where the trained model will be saved.
+MODEL_TRAINER_TRAINED_MODEL_DIR: str = "trained_model"
+
+# File name of the final trained model.
+MODEL_TRAINER_TRAINED_MODEL_NAME: str = "model.pkl"
+
+
+# ------------------------------------------------------------------------------
+# Model Performance Configuration
+# ------------------------------------------------------------------------------
+
+# Minimum expected F1-score required for a model to be considered
+# good enough for the next stage of the ML pipeline.
+#
+# Example:
+#     If F1-score >= 0.60 → Model is accepted
+#     If F1-score <  0.60 → Model is rejected
+MODEL_TRAINER_EXPECTED_SCORE: float = 0.6
+
+
+# ------------------------------------------------------------------------------
+# Model Configuration File
+# ------------------------------------------------------------------------------
+
+# Path to the YAML file containing:
+#     - Model definitions
+#     - Default model parameters
+#     - Hyperparameter search spaces
+#     - GridSearchCV configuration
+MODEL_TRAINER_MODEL_CONFIG_FILE_PATH: str = os.path.join(
+    "config",
+    "model.yaml"
+)
 
 
 
