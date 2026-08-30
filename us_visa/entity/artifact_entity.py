@@ -28,3 +28,21 @@ class DataValidationArtifact:
     message: str
     drift_report_file_path: str
 
+# ------------------------------------------------------------------------------
+# 3. DATA TRANSFORMATION ARTIFACT
+# Output returned by DataTransformation component after execution
+# Consumed by: ModelTrainer component 
+# ------------------------------------------------------------------------------
+@dataclass
+class DataTransformationArtifact:
+    """
+    Proof that data was successfully transformed and saved.
+
+    Attributes:
+        transformed_train_file_path: Path to the processed train.npy
+        transformed_test_file_path: Path to the processed test.npy 
+        transformed_object_file_path: Path to the fitted preprocessor.pkl
+    """
+    transformed_object_file_path: set
+    transformed_train_file_path: str
+    transformed_test_file_path: str

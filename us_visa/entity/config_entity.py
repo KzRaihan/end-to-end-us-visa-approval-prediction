@@ -59,4 +59,39 @@ class DataValidationConfig:
         data_validation_dir, DATA_VALIDATION_DRIFT_REPORT_DIR, DATA_VALIDATION_DRIFT_REPORT_FILE_NAME
     )
 
+# ------------------------------------------------------------------------------
+# 3. DATA TRANSFORMATION CONFIG
+# Converts flat constant names into full timestamped directory paths
+# ------------------------------------------------------------------------------
+@dataclass
+class DataTransformationConfig:
+    """
+    Input configuration for the DataTransformation component.
+    All paths are auto-generated inside the timestamped artifact root.
+
+    Example resolved paths:
+        data_transformation_dir        → artifacts/2026_03_08_17_00_01/data_transformation/
+        transformed_train_file_path    → artifacts/.../data_transformation/transformed/train.npy
+        transformed_test_file_path     → artifacts/.../data_transformation/transformed/test.npy
+        transformed_object_file_path   → artifacts/.../data_transformation/transformed_object/preprocessor.pkl
+    """
+    # Root directory for all transformation artifacts
+    data_transformation_dir: str = os.path.join(
+        training_pipeline_config.artifact_dir,DATA_TRANSFORMATION_DIR_NAME
+    )
+    # Path to save the processed training numpy array
+    transformed_train_file_path: str = os.path.join(
+        data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_DIR,TRAIN_FILE_NAME.replace("csv", "npy")
+    )
+    # Path to save the processed test numpy array
+    transformed_test_file_path: str = os.path.join(
+        data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_DIR, TEST_FILE_NAME.replace("csv", "npy")
+    )
+    # Path to save the fitted ColumnTransformer object (for inference)
+    transformed_object_file_path: str = os.path.join(
+        data_transformation_dir, DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR, PREPROCESSING_OBJECT_FILE_NAME
+    )
+
+
+
 

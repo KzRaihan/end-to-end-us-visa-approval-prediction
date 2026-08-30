@@ -1,90 +1,185 @@
 # ==============================================================================
 # us_visa/pipeline/training_pipeline.py
-# Master Orchestrator: Executes all ML pipeline components in sequence
+#
+# Master Orchestrator:
+# Executes all ML pipeline components in the correct sequence.
+#
+# Current Pipeline:
+#     1. Data Ingestion
+#     2. Data Validation
+#     3. Data Transformation
+#
+# Future Pipeline:
+#     4. Model Trainer
+#     5. Model Evaluation
+#     6. Model Pusher
 # ==============================================================================
+
+
 import sys
+
 from us_visa.exception import USvisaException
 from us_visa.logger import logging
 
+# ==============================================================================
+# Import Pipeline Components
+# ==============================================================================
+
 from us_visa.components.data_ingestion import DataIngestion
 from us_visa.components.data_validation import DataValidation
+from us_visa.components.data_transformation import DataTransformation
 
-from us_visa.entity.config_entity import(DataIngestionConfig,
-                                         DataValidationConfig
+
+# ==============================================================================
+# Import Configuration Entities
+# ==============================================================================
+
+from us_visa.entity.config_entity import (
+    DataIngestionConfig,
+    DataValidationConfig,
+    DataTransformationConfig
 )
 
-from us_visa.entity.artifact_entity import(DataIngestionArtifact, 
-                                           DataValidationArtifact
+
+# ==============================================================================
+# Import Artifact Entities
+# ==============================================================================
+
+from us_visa.entity.artifact_entity import (
+    DataIngestionArtifact,
+    DataValidationArtifact,
+    DataTransformationArtifact
 )
 
+
+# ==============================================================================
+# TRAINING PIPELINE
+# ==============================================================================
 
 class TrainingPipeline:
     """
-    Master orchestrator for the US Visa ML Pipeline.
-    Each method corresponds to one pipeline stage.
-    The run_pipeline() method executes all stages in sequence.
+    Master orchestrator for the US Visa ML Training Pipeline.
+
+    This class controls the execution order of all ML pipeline components.
+
+    Current Pipeline Flow:
+
+        Data Ingestion
+              ↓
+        Data Validation
+              ↓
+        Data Transformation
+
+    Each component receives the required configuration and/or artifact
+    and returns an artifact that can be consumed by the next component.
     """
+
     def __init__(self):
-        """Initialize the master pipeline configuration."""
+        """
+        Initialize all pipeline configuration objects.
+
+        Configuration objects contain the paths and settings required
+        by their corresponding pipeline components.
+        """
+
+        # Configuration for Data Ingestion
         self.data_ingestion_config = DataIngestionConfig()
+
+        # Configuration for Data Validation
         self.data_validation_config = DataValidationConfig()
-        
+
+        # Configuration for Data Transformation
+        self.data_transformation_config = DataTransformationConfig()
 
 
-    # ------------------------------------------------------------------
+    # ==========================================================================
     # STAGE 1: DATA INGESTION
-    # ------------------------------------------------------------------
+    # ==========================================================================
+
     def start_data_ingestion(self) -> DataIngestionArtifact:
         """
-        Executes the Data Ingestion component.
+        Execute the Data Ingestion component.
 
         Flow:
-            DataIngestionConfig → DataIngestion(component) → DataIngestionArtifact
+            DataIngestionConfig
+                    ↓
+            DataIngestion Component
+                    ↓
+            DataIngestionArtifact
 
         Returns:
-            DataIngestionArtifact containing paths to train.csv and test.csv.
+            DataIngestionArtifact:
+                Contains paths and information about the
+                ingested training and testing datasets.
         """
+
         try:
-            logging.info(">>> STAGE 1: DATA INGESTION — Starting...")
 
-            logging.info("Getting the data from mongodb")
-
-            # Step 1 and 2: Create component configuration and Initialize component with config
-            data_ingestion = DataIngestion(
-                data_ingestion_config=self.data_ingestion_config                
-            )
-            
-            
-            # Step 3: Execute and receive artifact
-            data_ingestion_artifact = data_ingestion.initiate_data_ingestion()
-            
-
-            logging.info("""
-                >>> STAGE 1: DATA INGESTION — Completed
-                    - Got the train_set and test_set from mongodb
-                """)
+            # ------------------------------------------------------------------
+            # Step 1: Log the beginning of Data Ingestion
+            # ------------------------------------------------------------------
 
             logging.info(
-                "Exited the start_data_ingestion method of TrainingPipeline class"
+                ">>> STAGE 1: DATA INGESTION — Starting..."
             )
+
+            # ------------------------------------------------------------------
+            # Step 2: Initialize Data Ingestion Component
+            # ------------------------------------------------------------------
+
+            # Pass the Data Ingestion configuration to the component.
+            data_ingestion = DataIngestion(
+                data_ingestion_config=self.data_ingestion_config
+            )
+
+            logging.info(
+                "Initialized DataIngestion component successfully."
+            )
+
+            # ------------------------------------------------------------------
+            # Step 3: Execute Data Ingestion
+            # ------------------------------------------------------------------
+
+            # Fetch data from MongoDB and create the DataIngestionArtifact.
+            data_ingestion_artifact = (
+                data_ingestion.initiate_data_ingestion()
+            )
+
+            # ------------------------------------------------------------------
+            # Step 4: Log Successful Completion
+            # ------------------------------------------------------------------
+
+            logging.info(
+                ">>> STAGE 1: DATA INGESTION — Completed successfully."
+            )
+
+            logging.info(
+                "Training and testing datasets are available."
+            )
+
+            # ------------------------------------------------------------------
+            # Step 5: Return Artifact
+            # ------------------------------------------------------------------
+
+            # This artifact will be passed to the Data Validation stage.
             return data_ingestion_artifact
-        
 
         except Exception as e:
+
+            # Convert the original error into the project's custom exception.
             raise USvisaException(e, sys) from e
 
 
-
-    # ------------------------------------------------------------------
+    # ==========================================================================
     # STAGE 2: DATA VALIDATION
-    # ------------------------------------------------------------------
+    # ==========================================================================
+
     def start_data_validation(
         self,
         data_ingestion_artifact: DataIngestionArtifact
     ) -> DataValidationArtifact:
         """
-        This method of TrainPipeline class is responsible for
-        starting the Data Validation component.
+        Execute the Data Validation component.
 
         Flow:
             DataIngestionArtifact
@@ -94,98 +189,263 @@ class TrainingPipeline:
             DataValidation Component
                     ↓
             DataValidationArtifact
+
+        Args:
+            data_ingestion_artifact:
+                Artifact generated by Data Ingestion.
+
+        Returns:
+            DataValidationArtifact:
+                Contains validation status and validation-related
+                artifact information.
         """
 
         try:
 
             # ------------------------------------------------------------------
-            # STEP 1: Log the start of the Data Validation stage
+            # Step 1: Log the beginning of Data Validation
             # ------------------------------------------------------------------
+
             logging.info(
                 ">>> STAGE 2: DATA VALIDATION — Starting..."
             )
 
+            # ------------------------------------------------------------------
+            # Step 2: Initialize Data Validation Component
+            # ------------------------------------------------------------------
 
-            # ------------------------------------------------------------------
-            # STEP 2: Create DataValidation Component
-            # ------------------------------------------------------------------
-            # Pass the output artifact from the Data Ingestion component
-            # and the configuration required by the Data Validation component.
+            # Pass the Data Ingestion artifact and Data Validation
+            # configuration to the validation component.
             data_validation = DataValidation(
                 data_ingestion_artifact=data_ingestion_artifact,
                 data_validation_config=self.data_validation_config
             )
 
+            logging.info(
+                "Initialized DataValidation component successfully."
+            )
 
             # ------------------------------------------------------------------
-            # STEP 3: Initiate Data Validation
+            # Step 3: Execute Data Validation
             # ------------------------------------------------------------------
-            # The DataValidation component performs operations such as:
-            #   - Validating dataset schema
-            #   - Detecting data drift
-            #   - Generating validation artifacts
+
+            # Validate the dataset according to the project schema
+            # and validation requirements.
             data_validation_artifact = (
                 data_validation.initiate_data_validation()
             )
 
+            # ------------------------------------------------------------------
+            # Step 4: Log Successful Completion
+            # ------------------------------------------------------------------
 
-            # ------------------------------------------------------------------
-            # STEP 4: Log Successful Data Validation
-            # ------------------------------------------------------------------
             logging.info(
-                "Performed the data validation operation successfully."
+                ">>> STAGE 2: DATA VALIDATION — Completed successfully."
             )
 
+            # ------------------------------------------------------------------
+            # Step 5: Return Artifact
+            # ------------------------------------------------------------------
 
-            # ------------------------------------------------------------------
-            # STEP 5: Log the Exit from This Method
-            # ------------------------------------------------------------------
-            logging.info(
-                "Exited the start_data_validation method "
-                "of TrainPipeline class."
-            )
-
-
-            # ------------------------------------------------------------------
-            # STEP 6: Return Data Validation Artifact
-            # ------------------------------------------------------------------
-            # Return the artifact generated by the Data Validation component
-            # so that the next pipeline stage can use it.
+            # Pass the validation artifact to the next pipeline stage.
             return data_validation_artifact
 
-
-        # ------------------------------------------------------------------
-        # EXCEPTION HANDLING
-        # ------------------------------------------------------------------
         except Exception as e:
+
+            # Convert the original error into the project's custom exception.
             raise USvisaException(e, sys) from e
 
 
+    # ==========================================================================
+    # STAGE 3: DATA TRANSFORMATION
+    # ==========================================================================
+
+    def start_data_transformation(
+        self,
+        data_ingestion_artifact: DataIngestionArtifact,
+        data_validation_artifact: DataValidationArtifact
+    ) -> DataTransformationArtifact:
+        """
+        Execute the Data Transformation component.
+
+        Flow:
+            DataIngestionArtifact
+                    +
+            DataValidationArtifact
+                    +
+            DataTransformationConfig
+                    ↓
+            DataTransformation Component
+                    ↓
+            DataTransformationArtifact
+
+        Args:
+            data_ingestion_artifact:
+                Artifact generated by Data Ingestion.
+
+            data_validation_artifact:
+                Artifact generated by Data Validation.
+
+        Returns:
+            DataTransformationArtifact:
+                Contains paths to the transformed datasets and
+                the saved preprocessing object.
+        """
+
+        try:
+
+            # ------------------------------------------------------------------
+            # Step 1: Log the beginning of Data Transformation
+            # ------------------------------------------------------------------
+
+            logging.info(
+                ">>> STAGE 3: DATA TRANSFORMATION — Starting..."
+            )
+
+            # ------------------------------------------------------------------
+            # Step 2: Initialize Data Transformation Component
+            # ------------------------------------------------------------------
+
+            # Pass the artifacts from the previous stages and
+            # the transformation configuration.
+            data_transformation = DataTransformation(
+                data_ingestion_artifact=data_ingestion_artifact,
+                data_transformation_config=self.data_transformation_config,
+                data_validation_artifact=data_validation_artifact
+            )
+
+            logging.info(
+                "Initialized DataTransformation component successfully."
+            )
+
+            # ------------------------------------------------------------------
+            # Step 3: Execute Data Transformation
+            # ------------------------------------------------------------------
+
+            # Perform:
+            #     - Feature engineering
+            #     - Feature encoding
+            #     - Numerical transformation
+            #     - Feature scaling
+            #     - Training-data resampling
+            #
+            # The component returns a DataTransformationArtifact.
+            data_transformation_artifact = (
+                data_transformation.initiate_data_transformation()
+            )
+
+            # ------------------------------------------------------------------
+            # Step 4: Log Successful Completion
+            # ------------------------------------------------------------------
+
+            logging.info(
+                ">>> STAGE 3: DATA TRANSFORMATION — Completed successfully."
+            )
+
+            # ------------------------------------------------------------------
+            # Step 5: Return Artifact
+            # ------------------------------------------------------------------
+
+            # This artifact will be passed to the Model Trainer stage.
+            return data_transformation_artifact
+
+        except Exception as e:
+
+            # Convert the original error into the project's custom exception.
+            raise USvisaException(e, sys) from e
 
 
-    # ------------------------------------------------------------------
-    # MASTER RUN: Execute all stages in sequence
-    # ------------------------------------------------------------------
+    # ==========================================================================
+    # MASTER PIPELINE
+    # ==========================================================================
+
     def run_pipeline(self) -> None:
         """
-        Executes the complete ML training pipeline from data ingestion
-        to model deployment. Each stage receives the artifact from the
-        previous stage as input.
+        Execute all available ML pipeline stages in sequence.
+
+        Current execution flow:
+
+            1. Data Ingestion
+            2. Data Validation
+            3. Data Transformation
+
+        Future stages:
+
+            4. Model Trainer
+            5. Model Evaluation
+            6. Model Pusher
         """
+
         try:
+
+            # ------------------------------------------------------------------
+            # Pipeline Start
+            # ------------------------------------------------------------------
+
             logging.info("=" * 70)
-            logging.info("US VISA ML TRAINING PIPELINE — EXECUTION STARTED")
+            logging.info(
+                "US VISA ML TRAINING PIPELINE — EXECUTION STARTED"
+            )
             logging.info("=" * 70)
 
-            # Stage 1: Data Ingestion
-            data_ingestion_artifact = self.start_data_ingestion()
 
-            # Stage 2: Data Validation
-            data_validation_artifact = self.start_data_validation(
-                data_ingestion_artifact = data_ingestion_artifact
+            # ==================================================================
+            # STAGE 1: DATA INGESTION
+            # ==================================================================
+
+            # Execute Data Ingestion.
+            #
+            # Output:
+            #     DataIngestionArtifact
+            data_ingestion_artifact = (
+                self.start_data_ingestion()
             )
 
 
-        except Exception as e:
-            raise USvisaException(e, sys) from e
+            # ==================================================================
+            # STAGE 2: DATA VALIDATION
+            # ==================================================================
 
+            # Pass the Data Ingestion artifact to Data Validation.
+            #
+            # Output:
+            #     DataValidationArtifact
+            data_validation_artifact = (
+                self.start_data_validation(
+                    data_ingestion_artifact=data_ingestion_artifact
+                )
+            )
+
+
+            # ==================================================================
+            # STAGE 3: DATA TRANSFORMATION
+            # ==================================================================
+
+            # Pass the artifacts generated by the previous stages
+            # to Data Transformation.
+            #
+            # Output:
+            #     DataTransformationArtifact
+            data_transformation_artifact = (
+                self.start_data_transformation(
+                    data_ingestion_artifact=data_ingestion_artifact,
+                    data_validation_artifact=data_validation_artifact
+                )
+            )
+
+
+            # ------------------------------------------------------------------
+            # Pipeline Completion
+            # ------------------------------------------------------------------
+
+            logging.info("=" * 70)
+            logging.info(
+                "US VISA ML TRAINING PIPELINE — EXECUTION COMPLETED"
+            )
+            logging.info("=" * 70)
+
+        except Exception as e:
+
+            # Convert any pipeline failure into the project's
+            # custom exception.
+            raise USvisaException(e, sys) from e
