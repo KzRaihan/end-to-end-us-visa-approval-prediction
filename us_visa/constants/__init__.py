@@ -22,6 +22,10 @@ TRAIN_FILE_NAME: str = "train.csv"
 TEST_FILE_NAME: str = "test.csv"
 SCHEMA_FILE_PATH = os.path.join("config", "schema.yaml")
 
+MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE: float = 0.5
+MODEL_BUCKET_NAME = "usvisabucke26"
+MODEL_PUSHER_S3_KEY = "model-registry"
+
 # ------------------------------------------------------------------------------
 # 2. DATA INGESTION CONSTANTS (Directories Name)
 # ------------------------------------------------------------------------------
@@ -67,8 +71,6 @@ Constants related to the Model Trainer component.
 All Model Trainer-related constants start with the
 'MODEL_TRAINER' prefix for easy identification and maintenance.
 """
-
-
 # ------------------------------------------------------------------------------
 # Model Trainer Directory Configuration
 # ------------------------------------------------------------------------------

@@ -8,9 +8,9 @@
 #     1. Data Ingestion
 #     2. Data Validation
 #     3. Data Transformation
-#
-# Future Pipeline:
 #     4. Model Trainer
+
+# Future Pipeline:
 #     5. Model Evaluation
 #     6. Model Pusher
 # ==============================================================================
