@@ -188,3 +188,32 @@ class ModelEvaluationConfig:
     # --------------------------------------------------------------------------
     # Identifies the trained model file inside the S3 bucket.
     s3_model_key_path: str = MODEL_FILE_NAME
+
+
+
+# ==============================================================================
+# MODEL PUSHER CONFIGURATION
+# ==============================================================================
+
+@dataclass
+class ModelPusherConfig:
+    """
+    Configuration settings for the Model Pusher component.
+
+    The Model Pusher is responsible for uploading the accepted trained
+    model from the local system to the configured AWS S3 model registry.
+    """
+
+    # --------------------------------------------------------------------------
+    # AWS S3 bucket where the trained model will be stored.
+    # --------------------------------------------------------------------------
+    bucket_name: str = MODEL_BUCKET_NAME
+
+    # --------------------------------------------------------------------------
+    # S3 object key/path where the trained model will be uploaded.
+    #
+    # Example:
+    #     model-registry/model.pkl
+    # --------------------------------------------------------------------------
+    s3_model_key_path: str = MODEL_FILE_NAME
+
