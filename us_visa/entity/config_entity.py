@@ -146,3 +146,45 @@ class ModelTrainerConfig:
     #     - GridSearchCV configuration
     model_config_file_path: str = MODEL_TRAINER_MODEL_CONFIG_FILE_PATH
 
+
+# ==============================================================================
+# 5. MODEL EVALUATION CONFIG
+# ==============================================================================
+
+@dataclass
+class ModelEvaluationConfig:
+    """
+    Configuration for the Model Evaluation component.
+
+    Attributes:
+        changed_threshold_score:
+            Minimum score threshold used to determine whether the newly
+            trained model is sufficiently better than the existing model.
+
+        bucket_name:
+            Name of the AWS S3 bucket where the model registry is stored.
+
+        s3_model_key_path:
+            S3 object key/path used to locate the model in the bucket.
+    """
+
+    # --------------------------------------------------------------------------
+    # Model comparison threshold
+    # --------------------------------------------------------------------------
+    # Used when comparing the newly trained model against the currently
+    # registered model.
+    changed_threshold_score: float = (
+        MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE
+    )
+
+    # --------------------------------------------------------------------------
+    # AWS S3 bucket name
+    # --------------------------------------------------------------------------
+    # Identifies the S3 bucket containing the model registry.
+    bucket_name: str = MODEL_BUCKET_NAME
+
+    # --------------------------------------------------------------------------
+    # S3 model key/path
+    # --------------------------------------------------------------------------
+    # Identifies the trained model file inside the S3 bucket.
+    s3_model_key_path: str = MODEL_FILE_NAME

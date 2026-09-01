@@ -22,9 +22,6 @@ TRAIN_FILE_NAME: str = "train.csv"
 TEST_FILE_NAME: str = "test.csv"
 SCHEMA_FILE_PATH = os.path.join("config", "schema.yaml")
 
-MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE: float = 0.5
-MODEL_BUCKET_NAME = "usvisabucke26"
-MODEL_PUSHER_S3_KEY = "model-registry"
 
 # ------------------------------------------------------------------------------
 # 2. DATA INGESTION CONSTANTS (Directories Name)
@@ -113,7 +110,57 @@ MODEL_TRAINER_MODEL_CONFIG_FILE_PATH: str = os.path.join(
     "model.yaml"
 )
 
+# ==============================================================================
+# 6. MODEL EVALUATION CONSTANTS
+# ==============================================================================
+"""
+Constants related to the Model Evaluation component.
 
+These constants define:
+    1. The minimum improvement threshold required for a newly trained model.
+    2. The AWS S3 bucket used for storing the model registry.
+    3. The S3 directory/key where registered models are stored.
+"""
+
+
+# ------------------------------------------------------------------------------
+# Minimum score improvement required for model replacement
+# ------------------------------------------------------------------------------
+# A newly trained model must improve over the currently registered model
+# by at least this threshold before it can replace the existing model.
+#
+# Example:
+#     Existing model score = 0.80
+#     New model score      = 0.85
+#     Improvement          = 0.05
+#
+#     Since 0.05 < 0.50, the new model would NOT replace the existing model.
+#
+# NOTE:
+# The exact interpretation depends on how the Model Evaluation component
+# compares the scores.
+MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE: float = 0.5
+
+
+# ------------------------------------------------------------------------------
+# AWS S3 Bucket Configuration
+# ------------------------------------------------------------------------------
+# Name of the AWS S3 bucket used as the model registry/storage location.
+MODEL_BUCKET_NAME: str = "usvisabucke26"
+
+
+# ------------------------------------------------------------------------------
+# S3 Model Registry Directory
+# ------------------------------------------------------------------------------
+# S3 key/prefix used to organize registered models inside the bucket.
+#
+# Expected S3 structure:
+#
+#     usvisabucke26/
+#     └── model-registry/
+#         └── model.pkl
+#
+MODEL_PUSHER_S3_KEY: str = "model-registry"
 
 
 
